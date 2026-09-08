@@ -1,0 +1,15 @@
+# Gen  AI Engineering
+pydantic
+langchain
+langgraph
+langchain-core
+langchain-community
+langchain_huggingface
+python-dotenv
+langchain-groq
+langchain-google-genai
+
+google-genai
+
+pandas
+tabulate
