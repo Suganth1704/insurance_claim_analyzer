@@ -1,11 +1,14 @@
 from pydantic import BaseModel
+from typing import Literal, List
+
 
 class UserData(BaseModel):
-    evidence_required:str
+    user_id:str
+    evidence_required:str | list
     user_history:str
     image_paths:list
     user_claim:str
-    agent:str
+    agent:str = None
 
 class AnalysisData(BaseModel):
     user_id: str

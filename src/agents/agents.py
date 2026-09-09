@@ -20,6 +20,7 @@ from src.prompts.prompt import (
 )
 from langchain.agents import create_agent
 from langchain_core.messages import HumanMessage, SystemMessage
+from langchain.agents.structured_output import ToolStrategy
 from google import genai
 
 class AgentBase(ABC):
@@ -38,7 +39,8 @@ class DataAgent(AgentBase):
                     tools=[read_evidence_requirements, 
                             get_user_history,
                             get_images_paths],
-                    system_prompt=DATA_AGENT_SYS_PROMT
+                    system_prompt=DATA_AGENT_SYS_PROMPT,
+                    response_format=ToolStrategy(UserData)
                     )
 
     def run(self,user_id:str,user_claim:str) -> dict:
@@ -50,11 +52,11 @@ class DataAgent(AgentBase):
             }
         )
 
-        data = json.loads(result["messages"][-1].content)
-        data["agent"] = self.__class__.__name__
+        #data = json.loads(result["messages"][-1].content)
+        result['structured_response'].agent = self.__class__.__name__
 
-        user_claim_data = UserData.model_validate(data)
-        return user_claim_data.model_dump()
+        #user_claim_data = UserData.model_validate(data)
+        return result['structured_response'].model_dump()
 
 
 class AnalysisAgent(AgentBase):
@@ -72,14 +74,14 @@ class AnalysisAgent(AgentBase):
     def get_human_content(self) -> list[dict]:
         content = []
         image_files = self.get_image_files()
-        image_content = [{'type':"image",
-                            'uri':image_file.uri,
+        image_content = [{'type':"media",
+                            'file_uri':image_file.uri,
                             'mime_type':image_file.mime_type,} for image_file in image_files]
         content.extend(image_content)
-        content.append({'type':'text', 'text': f'User cliam\n{self.state['user_calim']}'})
+        content.append({'type':'text', 'text': f'User claim\n{self.state['user_claim']}'})
         return content
     
-    def get_msg(self) -> HumanMessage:
+    def get_messages(self) -> HumanMessage:
         human_message = HumanMessage(content=self.get_human_content())
         system_message = SystemMessage(content=ANALYSIS_AGENT_SYS_PROMPT)
         return [system_message, human_message]
@@ -88,7 +90,7 @@ class AnalysisAgent(AgentBase):
         structured_model = self.__llm.with_structured_output(AnalysisData)
         messages = self.get_messages()
         resp = structured_model.invoke(messages)
-        return resp.model.dump()
+        return resp.model_dump()
 
 
     

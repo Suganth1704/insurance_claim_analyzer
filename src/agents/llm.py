@@ -22,7 +22,8 @@ class GroqGPT(LLM):
         self.__model = setttings.GROQ_GPT
 
     def get_llm(self):
-        llm = ChatGroq(model=self.__model)
+        llm = ChatGroq(model=self.__model,
+                        max_retries=2)
         return llm
     
 class GeminiFlash(LLM):
@@ -31,5 +32,9 @@ class GeminiFlash(LLM):
         self.__model = setttings.GOOGLE_GEM
 
     def get_llm(self):
-        llm = ChatGoogleGenerativeAI(model=setttings.GOOGLE_GEM)
+        llm = ChatGoogleGenerativeAI(
+            model=setttings.GOOGLE_GEM,
+            temperature=0.5,
+            max_retries=2
+            )
         return llm
