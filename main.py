@@ -2,7 +2,8 @@ import os
 
 from src.agents.agents import (
     DataAgent,
-    AnalysisAgent)
+    AnalysisAgent,
+    ReviewAgent)
 from src.config.setting import get_settings
 
 from langchain_groq import ChatGroq
@@ -18,18 +19,26 @@ def _main():
     for k,v in resp.items():
         print(f"{k} : {v}")
     state = {'images':resp['image_paths'], 'user_claim':resp['user_claim']}
+    #state = {'images':img, 'analyzer_output': analyzer_output}
     agent = AnalysisAgent(state)
     resp = agent.run()
     print("###Analyser output###")
     for k,v in resp.items():
         print(f"{k} : {v}")
+    analyser_output = f"###Analyser output###\n\n{resp}"
+    state = state | {'analyzer_output': analyser_output}
+    agent = ReviewAgent(state)
+    res = agent.run()
+    for k,v in res.items():
+        print(f"{k} : {v}")
 
 def loop():
     import time
-    for i in range(5):
-        print(f'loop: {i}')
-        _main()
-        time.sleep(20)
+    # for i in range(5):
+    #     print(f'loop: {i}')
+    #     _main()
+    #     time.sleep(20)
+    _main()
 
 if __name__ == "__main__":
     loop()

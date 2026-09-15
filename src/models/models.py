@@ -24,3 +24,10 @@ class AnalysisData(BaseModel):
     supporting_image_ids: List[str]
     valid_image: bool
     severity: Literal["none","low","medium","high","unknown"]
+    #agent:str
+
+class ReviewData(BaseModel):
+    discrepancies: str | None
+    decision: Literal["Approved", "Rejected", "Human Intervention"]
+    reason: str
+    agent:str

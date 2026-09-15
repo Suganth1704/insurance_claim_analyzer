@@ -6,6 +6,7 @@ class Settings(BaseSettings):
 
     GROQ_API_KEY:str
     GL_GEN_AI_API_KEY:str
+    NV_KIMI_K3_API_KEY:str
 
     #Dir
     BASE_DIR:str = os.path.dirname(os.path.abspath(__name__))
@@ -15,6 +16,7 @@ class Settings(BaseSettings):
     #Models
     GOOGLE_GEM: str = "gemini-2.5-flash"
     GROQ_GPT: str = "openai/gpt-oss-120b"
+    GROQ_QWEN: str = "qwen/qwen3.8-27b"
 
 
     APP_NAME: str = "Insurance_claim_analyzer"
