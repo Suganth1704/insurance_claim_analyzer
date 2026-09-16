@@ -21,6 +21,7 @@ from src.prompts.prompt import (
     ANALYSIS_AGENT_SYS_PROMPT,
     REVIEW_AGENT_PROMPT
 )
+from src.utils.utils import timeit
 from langchain.agents import create_agent
 from langchain_core.messages import HumanMessage, SystemMessage
 from langchain.agents.structured_output import ToolStrategy
@@ -47,7 +48,7 @@ class DataAgent(AgentBase):
                     system_prompt=DATA_AGENT_SYS_PROMPT,
                     response_format=ToolStrategy(UserData)
                     )
-
+    @timeit
     def run(self,user_id:str,user_claim:str) -> dict:
         result = self.agent.invoke(
             {
@@ -91,6 +92,7 @@ class AnalysisAgent(AgentBase):
         system_message = SystemMessage(content=ANALYSIS_AGENT_SYS_PROMPT)
         return [system_message, human_message]
 
+    @timeit
     def run(self) -> dict:
         structured_model = self.__llm.with_structured_output(AnalysisData)
         messages = self.get_messages()
@@ -144,6 +146,7 @@ class ReviewAgent(AgentBase):
             human_message = {"role":"user", "content":self.get_human_content()}
             return human_message
 
+        @timeit
         def run(self)-> dict:
             messages = self.get_messages()
             result = self.agent.invoke({"messages":[messages]})
